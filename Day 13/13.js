@@ -27,15 +27,6 @@ const part1 = (inputString) => {
         const countA = det1 / det
         const countB = det2 / det
         if (countA % 1 === 0 && countB % 1 === 0) results.push([countA, countB])
-        // for (let aPress = 100; aPress > 0; aPress--) {
-        //     const newCoordsA = a.map((a, i) => prize[i] - (a * aPress))
-        //     if (newCoordsA.some((ele) => ele < 0)) continue
-        //     for (let bPress = 100; bPress > 0; bPress--) {
-        //         const newCoordsB = b.map((b, i) => newCoordsA[i] - (b * bPress))
-        //         if (newCoordsB.some((ele) => ele < 0)) continue
-        //         if (newCoordsB.every((ele) => ele === 0)) results.push([aPress, bPress])
-        //     }
-        // }
     }
     return results.reduce((acc, curr) => acc + curr[1] + (curr[0] * 3), 0)
 }

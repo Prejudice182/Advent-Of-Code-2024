@@ -21,15 +21,21 @@ const part1 = (inputString) => {
     let results = []
     for (const machine of machines) {
         const [a, b, prize] = [...machine]
-        for (let aPress = 100; aPress > 0; aPress--) {
-            const newCoordsA = a.map((a, i) => prize[i] - (a * aPress))
-            if (newCoordsA.some((ele) => ele < 0)) continue
-            for (let bPress = 100; bPress > 0; bPress--) {
-                const newCoordsB = b.map((b, i) => newCoordsA[i] - (b * bPress))
-                if (newCoordsB.some((ele) => ele < 0)) continue
-                if (newCoordsB.every((ele) => ele === 0)) results.push([aPress, bPress])
-            }
-        }
+        const det = (a[0] * b[1]) - (a[1] * b[0])
+        const det1 = prize[0] * b[1] - prize[1] * b[0]
+        const det2 = a[0] * prize[1] - a[1] * prize[0]
+        const countA = det1 / det
+        const countB = det2 / det
+        if (countA % 1 === 0 && countB % 1 === 0) results.push([countA, countB])
+        // for (let aPress = 100; aPress > 0; aPress--) {
+        //     const newCoordsA = a.map((a, i) => prize[i] - (a * aPress))
+        //     if (newCoordsA.some((ele) => ele < 0)) continue
+        //     for (let bPress = 100; bPress > 0; bPress--) {
+        //         const newCoordsB = b.map((b, i) => newCoordsA[i] - (b * bPress))
+        //         if (newCoordsB.some((ele) => ele < 0)) continue
+        //         if (newCoordsB.every((ele) => ele === 0)) results.push([aPress, bPress])
+        //     }
+        // }
     }
     return results.reduce((acc, curr) => acc + curr[1] + (curr[0] * 3), 0)
 }
@@ -40,30 +46,18 @@ const part2 = (inputString) => {
     for (const machine of machines) {
         let [a, b, prize] = [...machine]
         prize = prize.map((ele) => ele + 10000000000000)
-        let aPress = 0, bPress = 0
-        while (prize.some((ele) => ele > 0)) {
-            aPress++
-            prize = prize.map((ele, i) => ele - (a[i] * aPress))
-            while (prize.some((ele) => ele > 0)) {
-                bPress++
-                prize = prize.map((ele, i) => ele - (b[i] * bPress))
-                if (prize.every((ele) => ele === 0)) results.push([aPress, bPress])
-            }
-        }
-        // for (let aPress = 10000000; aPress > 0; aPress--) {
-        //     const newCoordsA = a.map((a, i) => prize[i] - (a * aPress))
-        //     if (newCoordsA.some((ele) => ele < 0)) continue
-        //     for (let bPress = 10000000; bPress > 0; bPress--) {
-        //         const newCoordsB = b.map((b, i) => newCoordsA[i] - (b * bPress))
-        //         if (newCoordsB.some((ele) => ele < 0)) continue
-        //         if (newCoordsB.every((ele) => ele === 0)) results.push([aPress, bPress])
-        //     }
-        // }
+        const det = (a[0] * b[1]) - (a[1] * b[0])
+        const det1 = prize[0] * b[1] - prize[1] * b[0]
+        const det2 = a[0] * prize[1] - a[1] * prize[0]
+        const countA = det1 / det
+        const countB = det2 / det
+        if (countA % 1 === 0 && countB % 1 === 0) results.push([countA, countB])
     }
-    return results
+    return results.reduce((acc, curr) => acc + curr[1] + (curr[0] * 3), 0)
 }
 
-// console.log(part1(testData))
-// console.log(part1(input))
+console.log(part1(testData))
+console.log(part1(input))
 
 console.log(part2(testData))
+console.log(part2(input))

@@ -40,7 +40,16 @@ const part2 = (inputString) => {
     for (const machine of machines) {
         let [a, b, prize] = [...machine]
         prize = prize.map((ele) => ele + 10000000000000)
-        console.log(prize[0] / a[0])
+        let aPress = 0, bPress = 0
+        while (prize.some((ele) => ele > 0)) {
+            aPress++
+            prize = prize.map((ele, i) => ele - (a[i] * aPress))
+            while (prize.some((ele) => ele > 0)) {
+                bPress++
+                prize = prize.map((ele, i) => ele - (b[i] * bPress))
+                if (prize.every((ele) => ele === 0)) results.push([aPress, bPress])
+            }
+        }
         // for (let aPress = 10000000; aPress > 0; aPress--) {
         //     const newCoordsA = a.map((a, i) => prize[i] - (a * aPress))
         //     if (newCoordsA.some((ele) => ele < 0)) continue

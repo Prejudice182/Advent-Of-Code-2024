@@ -25,49 +25,74 @@ const testData = `5,4
 1,6
 2,0`
 
-const isInBounds = (grid, x, y) => x >= 0 && x < grid[0].length && y >= 0 && y < grid.length
-const dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]
-const findShortest = (visited, target) => {
-    if (!visited[target]) return false
-    let current = target
-    const path = []
-    while (current) {
-        path.unshift(current)
-        current = visited[current]
-    }
-    return path
-}
+const isInBounds = (grid, x, y) =>
+    x >= 0 && x < grid[0].length && y >= 0 && y < grid.length
+const dirs = [
+    [0, 1],
+    [1, 0],
+    [0, -1],
+    [-1, 0],
+]
 
-const part1 = (inputString) => {
-    const matrix = new Array(7).fill('.').map(() => new Array(7).fill('.'))
-    const inputArray = inputString.split(/\r?\n/).map((value) => ({x: value.split(',')[0], y: value.split(',')[1]}))
-    for (let i = 0; i <= 12; i++) {
-        const current = inputArray[i]
-        matrix[current.y][current.x] = '#'
-    }
-    const stack = [[0, 0]]
-    const path = []
-    const lastVisited = {}
-    lastVisited['0,0'] = null
-    while (true) {
-        const [x, y] = [...stack.pop()]
-        path.push([x, y].join(','))
-        matrix[y][x] = 'O'
-        if (x === matrix[0].length - 1 && y === matrix.length - 1) break
-        let unvisited = 0
+const part1 = (inputString, size, take) => {
+    const matrix = new Array(size)
+        .fill('.')
+        .map(() => new Array(size).fill('.'))
+    const bytes = inputString
+        .split(/\r?\n/)
+        .map((value) => value.split(',').map(Number))
+    const byteSegment = bytes.slice(0, take)
+    const seen = { '0,0': 1 }
+    for (const [x, y] of byteSegment) seen[[x, y].join(',')] = 1
+    const stack = [{ distance: 0, x: 0, y: 0 }]
+    while (stack.length) {
+        const current = stack.shift()
+        if (current.x === size - 1 && current.y === size - 1)
+            return current.distance
         for (const dir of dirs) {
-            const [nx, ny] = [x + dir[0], y + dir[1]]
-            if (isInBounds(matrix, nx, ny) && matrix[ny][nx] === '.') {
-                const key = [nx, ny].join(',')
-                if (!(key in lastVisited)) {
-                    lastVisited[key] = [x, y].join(',')
-                }
-                stack.push([nx, ny])
-                unvisited++
+            const [nx, ny] = [current.x + dir[0], current.y + dir[1]]
+            if (isInBounds(matrix, nx, ny) && !seen[[nx, ny].join(',')]) {
+                seen[[nx, ny].join(',')] = 2
+                stack.push({ distance: current.distance + 1, x: nx, y: ny })
             }
         }
     }
-    return findShortest(lastVisited, '6,6')
 }
 
-console.log(part1(testData))
+console.log(part1(testData, 7, 12))
+console.log(part1(input, 71, 1024))
+
+const part2 = (inputString, size) => {
+    const matrix = new Array(size)
+        .fill('.')
+        .map(() => new Array(size).fill('.'))
+    const bytes = inputString
+        .split(/\r?\n/)
+        .map((value) => value.split(',').map(Number))
+    const walls = []
+    mazeLoop: for (const [x, y] of bytes) {
+        const seen = { '0,0': 1 }
+        const key = [x, y].join(',')
+        walls.push(key)
+        for (const wall of walls) {
+            seen[wall] = 1
+        }
+        const stack = [{ distance: 0, x: 0, y: 0 }]
+        while (stack.length) {
+            const current = stack.shift()
+            if (current.x === size - 1 && current.y === size - 1)
+                continue mazeLoop
+            for (const dir of dirs) {
+                const [nx, ny] = [current.x + dir[0], current.y + dir[1]]
+                if (isInBounds(matrix, nx, ny) && !seen[[nx, ny].join(',')]) {
+                    seen[[nx, ny].join(',')] = 2
+                    stack.push({ distance: current.distance + 1, x: nx, y: ny })
+                }
+            }
+        }
+        return [x, y].join(',')
+    }
+}
+
+console.log(part2(testData, 7))
+console.log(part2(input, 71))
